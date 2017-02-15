@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using FisherInsuranceApi.Data;
 
 namespace FisherInsuranceAPI
 {
@@ -25,9 +26,8 @@ namespace FisherInsuranceAPI
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // Add framework services.
+        public void ConfigureServices(IServiceCollection services) {
+            services.AddSingleton<IMemoryStore, MemoryStore>();
             services.AddMvc();
         }
 
