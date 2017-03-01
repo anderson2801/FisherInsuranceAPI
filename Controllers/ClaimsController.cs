@@ -4,34 +4,49 @@ using Microsoft.AspNetCore.Mvc;
 
 [Route("api/claims")]
 public class ClaimsController : Controller {
-private IMemoryStore db;
-public ClaimsController(IMemoryStore repo) {
-    db = repo;
-}
- 
-[HttpGet]
-public IActionResult GetClaims() {
-    return Ok(db.RetrieveAllClaims);
-}
- 
-[HttpGet("{id}")]
-public IActionResult Get(int id) {
-    return Ok(db.RetrieveClaim(id));
-}
 
-[HttpPost]
-public IActionResult Post([FromBody] Claim claim) {
-    return Ok(db.CreateClaim(claim));
-}
+    private readonly FisherContext db;
 
-[HttpPut("{id}")]
-public IActionResult Put([FromBody] Claim claim) {
-    return Ok(db.UpdateClaim(claim));
-}
- 
-[HttpDelete("{id}")]
-public IActionResult Delete(int id) {
-    db.DeleteClaim(id); 
-    return Ok();
+    public ClaimsController(FisherContext context){
+        db = context;
+    }
+
+   [HttpGet]
+   public IActionResult GetClaims(){
+     return Ok(db.Claims);
+   }
+
+    [HttpGet("{id}", Name = "GetClaim")]
+    public IActionResult Get(int id) {
+     return Ok(db.Claims.Find(id));
+    }
+
+    [HttpPost]
+    public IActionResult Post([FromBody] Claim claim) {
+        var newClaim = db.Claims.Add(claim);
+        db.SaveChanges();
+        return CreatedAtRoute("GetClaim", new { id = claim.Id }, claim);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Put(int id, [FromBody] Claim claim) {
+        var newClaim = db.Claims.Find(id);
+        if (newClaim == null){
+            return NotFound();
+        }
+        newClaim = claim;
+        db.SaveChanges();
+        return Ok(newClaim);
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id) {
+    var claimToDelete = db.Claims.Find(id);
+    if (claimToDelete == null){
+        return NotFound();
+    }
+        db.Claims.Remove(claimToDelete);
+        db.SaveChangesAsync();
+        return NoContent();
     }
 }

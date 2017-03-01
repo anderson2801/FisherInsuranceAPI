@@ -3,35 +3,50 @@ using FisherInsuranceApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/quotes")]
-public class AutoController : Controller {
-private IMemoryStore db;
-public AutoController(IMemoryStore repo) {
-    db = repo;
-}
- 
-[HttpGet]
-public IActionResult GetQuotes() {
-    return Ok(db.RetrieveAllQuotes);
-}
- 
-[HttpGet("{id}")]
-public IActionResult Get(int id) {
-    return Ok(db.RetrieveQuote(id));
-}
+public class QuotesController : Controller {
 
-[HttpPost]
-public IActionResult Post([FromBody] Quote quote) {
-    return Ok(db.CreateQuote(quote));
-}
+    private readonly FisherContext db;
 
-[HttpPut("{id}")]
-public IActionResult Put([FromBody] Quote quote) {
-    return Ok(db.UpdateQuote(quote));
-}
- 
-[HttpDelete("{id}")]
-public IActionResult Delete(int id) {
-    db.DeleteQuote(id); 
-    return Ok();
+    public QuotesController(FisherContext context){
+        db = context;
+    }
+
+   [HttpGet]
+   public IActionResult GetQuotes(){
+     return Ok(db.Quotes);
+   }
+
+    [HttpGet("{id}", Name = "GetQuote")]
+    public IActionResult Get(int id) {
+     return Ok(db.Quotes.Find(id));
+    }
+
+    [HttpPost]
+    public IActionResult Post([FromBody] Quote quote) {
+        var newQuote = db.Quotes.Add(quote);
+        db.SaveChanges();
+        return CreatedAtRoute("GetQuote", new { id = quote.Id }, quote);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Put(int id, [FromBody] Quote quote) {
+        var newQuote = db.Quotes.Find(id);
+        if (newQuote == null){
+            return NotFound();
+        }
+        newQuote = quote;
+        db.SaveChanges();
+        return Ok(newQuote);
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id) {
+    var QuoteToDelete = db.Quotes.Find(id);
+    if (QuoteToDelete == null){
+        return NotFound();
+    }
+        db.Quotes.Remove(QuoteToDelete);
+        db.SaveChangesAsync();
+        return NoContent();
     }
 }
