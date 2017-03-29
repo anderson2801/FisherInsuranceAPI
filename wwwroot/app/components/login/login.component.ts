@@ -21,12 +21,12 @@ export class LoginComponent {
             username: ["", Validators.required],
             password: ["", Validators.required]
 }); }
-    performLogin(e) {
+performLogin(e) {
         e.preventDefault();
         var username = this.loginForm.value.username;
         var password = this.loginForm.value.password;
-        this.authService.login(username, password)
-        .subscribe((data) => {
+this.authService.login(username, password)
+.subscribe((data) => {
     // login successful
     this.loginError = false;
     var auth = this.authService.getAuth();
@@ -34,8 +34,9 @@ export class LoginComponent {
     this.router.navigate([""]);
 },
 (err) => {
-    console.log(err);
+console.log(err);
     // login failure
     this.loginError = true;
 });
-} }
+}
+}

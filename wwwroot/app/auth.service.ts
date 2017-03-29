@@ -7,7 +7,7 @@ import { AuthHttp } from "./auth.http";
 export class AuthService { 
     authKey = "auth"; 
  
-    constructor(private http: Http) { 
+    constructor(private http: AuthHttp) { 
     } 
  
     login(username: string, password: string): any { 

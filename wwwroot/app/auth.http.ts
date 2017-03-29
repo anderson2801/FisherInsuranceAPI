@@ -2,9 +2,6 @@ import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 
 @Injectable()
-import { Injectable } from '@angular/core';
-import { Http, Headers } from '@angular/http';
-@Injectable()
 export class AuthHttp {
     http = null;
     authKey = "auth";
