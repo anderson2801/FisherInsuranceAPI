@@ -31,6 +31,7 @@ namespace FisherInsuranceAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
             services.AddDbContext<FisherContext>();
+            services.AddSingleton<DbSeeder>();
             services.AddMvc();
         services.AddIdentity<ApplicationUser, IdentityRole>(config =>
         {
@@ -42,7 +43,7 @@ namespace FisherInsuranceAPI
             .AddDefaultTokenProviders();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, DbSeeder dbseeder)
         {
         loggerFactory.AddConsole(Configuration.GetSection("Logging")); loggerFactory.AddDebug();
             app.UseDefaultFiles();
@@ -69,6 +70,13 @@ namespace FisherInsuranceAPI
             //or this
             //app.UseCookieAuthentication();
             app.UseMvc();
+            try
+            {
+                dbseeder.SeedAsync().Wait();
+            }
+            catch (AggregateException e){
+                throw new Exception(e.ToString());
+            }
             }
             }
 }
